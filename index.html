@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0b1220" />
+    <meta name="description" content="پلنگ برفی — یار هم‌سفر خودمراقبتی تو. آفلاین، خصوصی، رایگان." />
+    <title>پلنگ برفی — خودمراقبتی</title>
+
+    <link rel="stylesheet" href="./assets/fonts/fonts.css" />
+    <link rel="stylesheet" href="./assets/css/app.css" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      if (window.tailwind) {
+        tailwind.config = {
+          theme: { extend: { fontFamily: { sans: ['Vazirmatn', 'Vazirmatn-Fallback', 'system-ui', 'sans-serif'] } } }
+        };
+      }
+    </script>
+
+    <link rel="manifest" href="./manifest.json" />
+    <link rel="icon" href="./icons/icon-192.png" sizes="192x192" />
+    <link rel="apple-touch-icon" href="./icons/icon-192.png" />
+  </head>
+
+  <body class="min-h-screen antialiased">
+    <div id="welcome-screen" class="hidden fixed inset-0 z-50 bg-slate-950 p-5 overflow-y-auto">
+      <div class="max-w-md mx-auto pt-10 space-y-5">
+        <div class="text-center space-y-2">
+          <div id="welcome-leopard" class="flex justify-center">
+            <picture>
+              <source srcset="./assets/leopard/stage-1.webp" type="image/webp" />
+              <img src="./assets/leopard/stage-1.png" alt="پلنگ برفی" class="w-28 h-28 object-contain drop-shadow-2xl" />
+            </picture>
+          </div>
+          <h1 class="text-2xl font-extrabold text-white">پلنگ برفی</h1>
+          <p class="text-sm text-slate-400 leading-relaxed">
+            یارت اینجاست. هر قدم کوچکی که برای خودت برداری، او هم با تو بزرگ می‌شود.
+          </p>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
+          <label for="setup-name" class="block text-xs font-bold text-slate-300">اسمت را بگو</label>
+          <input id="setup-name" type="text" autocomplete="nickname" placeholder="مثلاً: نگار"
+            class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-white placeholder:text-slate-600 focus:border-sky-500 outline-none" />
+
+          <label for="setup-why" class="block text-xs font-bold text-slate-300 pt-1">
+            چرا این مسیر را انتخاب کردی؟ <span class="text-slate-500 font-normal">(اختیاری)</span>
+          </label>
+          <textarea id="setup-why" rows="2" placeholder="یک جمله صادقانه با خودت…"
+            class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-white placeholder:text-slate-600 focus:border-sky-500 outline-none resize-none"></textarea>
+
+          <button onclick="startJourney()" class="w-full bg-sky-600 hover:bg-sky-500 active:bg-sky-700 text-white font-bold rounded-xl py-3 text-sm transition">
+            شروع سفر
+          </button>
+        </div>
+
+        <p class="text-[11px] text-center text-slate-500 leading-relaxed px-4">
+          همه‌چیز روی همین دستگاه ذخیره می‌شود. هیچ‌چیز جایی نمی‌رود.<br />
+          حساب کاربری لازم نیست.
+        </p>
+      </div>
+    </div>
+
+    <header id="app-header" class="sticky top-0 z-30 p-4 bg-gradient-to-l from-sky-700 to-sky-950 shadow-lg transition-all duration-300">
+      <div class="max-w-2xl mx-auto flex items-center justify-between gap-3">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <img id="header-leopard" src="./assets/leopard/stage-1.png" alt="" aria-hidden="true" class="w-8 h-8 object-contain shrink-0" />
+          <div class="min-w-0">
+            <div id="user-display-name" class="text-sm font-extrabold text-white truncate">—</div>
+            <div id="user-stage-label" class="text-[10px] text-white/70 truncate">مرحله ۱ — جوجه</div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-1.5 shrink-0">
+          <span id="energy-badge" class="text-[10px] bg-white/15 text-white px-2 py-1 rounded-full font-bold tabular-nums">⚡ ۰</span>
+          <span id="snowflake-badge" class="text-[10px] bg-white/15 text-white px-2 py-1 rounded-full font-bold tabular-nums">❄ ۰</span>
+          <button onclick="openSettings()" aria-label="تنظیمات" class="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 text-white text-sm transition">⚙</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="max-w-2xl mx-auto px-4 pb-28">
+      <section class="mt-4">
+        <div id="leopard-hero" class="bg-slate-900/70 border border-slate-800 rounded-3xl p-5 text-center space-y-3">
+          <div class="flex justify-center">
+            <div id="leopard-container" class="leopard-frame relative w-40 h-40 flex items-center justify-center">
+              <picture>
+                <source id="leopard-source-webp" srcset="./assets/leopard/stage-1.webp" type="image/webp" />
+                <img id="leopard-image" src="./assets/leopard/stage-1.png" alt="پلنگ برفی — جوجه"
+                  class="w-full h-full object-contain drop-shadow-2xl"
+                  onerror="this.style.display='none'; document.getElementById('leopard-fallback').style.display='flex';" />
+              </picture>
+              <div id="leopard-fallback" style="display: none" class="absolute inset-0 items-center justify-center text-7xl">🐆</div>
+            </div>
+          </div>
+
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between text-[11px]">
+              <span id="leopard-stage-name" class="font-bold text-slate-200">جوجه</span>
+              <span class="text-[9px] text-slate-600">مرحله رشد</span>
+              <span id="leopard-xp-label" class="text-slate-400 tabular-nums">۰ XP</span>
+            </div>
+            <div class="progress-track h-2">
+              <div id="leopard-progress" class="progress-fill bg-sky-500" style="width: 0%"></div>
+            </div>
+            <div id="leopard-next-label" class="text-[10px] text-slate-500">تا رشد بعدی: — XP</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="mt-3">
+        <div id="coach-card" class="hidden bg-slate-900/70 border border-slate-800 rounded-2xl p-4 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] font-bold bg-slate-800 text-slate-300 px-2 py-0.5 rounded-full">کوچ امروز</span>
+            <span id="coach-progress" class="text-[10px] font-mono text-slate-400">۰٪</span>
+          </div>
+          <div>
+            <div class="text-[10px] text-slate-500 mb-0.5">اقدام بعدی</div>
+            <p id="coach-next-action" class="text-xs text-slate-200 leading-relaxed">—</p>
+          </div>
+          <p id="coach-motivation" class="text-[11px] text-sky-300/90 leading-relaxed italic">—</p>
+        </div>
+      </section>
+
+      <nav class="mt-4 sticky top-[64px] z-20 bg-slate-950/90 backdrop-blur py-2 -mx-4 px-4">
+        <div id="stage-tabs-bar" class="grid grid-cols-5 gap-1 bg-slate-900 rounded-2xl p-1"></div>
+      </nav>
+
+      <section id="stage-1" class="stage-content stage-panel mt-4 space-y-3">
+        <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-4">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-sm font-extrabold text-white">پنج قدم آغاز</h2>
+            <span id="s1-timer" class="text-[10px] font-mono bg-slate-800 text-sky-300 px-2 py-1 rounded-full tabular-nums">۷۲:۰۰:۰۰</span>
+          </div>
+          <div id="s1-steps-container" class="space-y-2"></div>
+          <div class="mt-3 space-y-1">
+            <div class="flex justify-between text-[10px] text-slate-400">
+              <span id="s1-progress-label">۰ از ۵ اقدام</span>
+              <span id="s1-progress-pct">۰٪</span>
+            </div>
+            <div class="progress-track h-1.5">
+              <div id="s1-progress-bar" class="progress-fill bg-sky-500" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-4">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-sm font-extrabold text-white">اهداف امروز</h2>
+            <button onclick="openGoalModal()" aria-label="افزودن هدف" class="w-7 h-7 rounded-full bg-sky-600 hover:bg-sky-500 text-white text-sm font-bold transition">+</button>
+          </div>
+          <div id="goals-list" class="space-y-2"></div>
+        </div>
+
+        <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-4">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-sm font-extrabold text-white">تأمل امروز</h2>
+            <button onclick="openReflectionModal()" aria-label="نوشتن تأمل" class="w-7 h-7 rounded-full bg-sky-600 hover:bg-sky-500 text-white text-sm font-bold transition">✎</button>
+          </div>
+          <div id="reflections-list" class="space-y-2"></div>
+        </div>
+      </section>
+
+      <section id="stage-2" class="stage-content stage-panel mt-4 space-y-3 hidden">
+        <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-4">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-sm font-extrabold text-white">زنجیره هفت روزه</h2>
+            <span id="s2-streak-badge" class="text-[11px] font-mono bg-slate-800 text-emerald-300 px-2.5 py-1 rounded-full">۰ / ۷</span>
+          </div>
+          <div id="s2-days-bar" class="grid grid-cols-7 gap-1 mb-3"></div>
+          <div class="space-y-1.5">
+            <label for="s2-note" class="block text-[10px] text-slate-400">گزارش شبانه</label>
+            <textarea id="s2-note" rows="2" placeholder="امروز چه چیزی خوب پیش رفت؟"
+              class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white placeholder:text-slate-600 focus:border-emerald-500 outline-none resize-none"></textarea>
+            <button onclick="submitDailyReport()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl py-2.5 text-xs transition">
+              ثبت گزارش و ادامه زنجیره
+            </button>
+          </div>
+        </div>
+
+        <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-4">
+          <h2 class="text-sm font-extrabold text-white mb-3">تنفس و تمرکز</h2>
+          <div id="breathing-patterns" class="grid grid-cols-3 gap-2 mb-3"></div>
+          <div class="flex justify-center py-4">
+            <div id="breath-circle" class="breath-circle w-28 h-28 rounded-full bg-emerald-500/20 border-2 border-emerald-500/50 flex items-center justify-center">
+              <span id="breath-label" class="text-sm font-bold text-emerald-300">آماده</span>
+            </div>
+          </div>
+          <button onclick="toggleBreathing()" id="breath-btn" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl py-2.5 text-xs transition">
+            شروع تنفس
+          </button>
+        </div>
+
+        <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-4">
+          <h2 class="text-sm font-extrabold text-white mb-3">حال امروزت چطور است؟</h2>
+          <div id="mood-scale" class="grid grid-cols-5 gap-1.5 mb-3"></div>
+          <div id="mood-chart" class="h-20 flex items-end gap-1"></div>
+        </div>
+
+        <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-4">
+          <h2 class="text-sm font-extrabold text-white mb-3">ماجراجویی</h2>
+          <p id="adventure-text" class="text-[11px] text-slate-400 leading-relaxed mb-3">
+            با ۵۰ انرژی، پلنگت را به ماجراجویی بفرست تا با یک داستان برگردد.
+          </p>
+          <button onclick="startAdventure()" id="adventure-btn"
+            class="w-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-800 disabled:text-slate-600 text-white font-bold rounded-xl py-2.5 text-xs transition">
+            شروع ماجراجویی
+          </button>
+        </div>
+      </section>
+
+      <section id="stage-3" class="stage-content stage-panel mt-4 hidden">
+        <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-8 text-center space-y-2">
+          <div class="text-4xl">🔒</div>
+          <h2 class="text-sm font-extrabold text-white">مرحله ۳ — جوان</h2>
+          <p class="text-[11px] text-slate-400 leading-relaxed">با تکمیل زنجیره هفت روزه مرحله ۲، این مرحله باز می‌شود.</p>
+        </div>
+      </section>
+
+      <section id="stage-4" class="stage-content stage-panel mt-4 hidden">
+        <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-8 text-center space-y-2">
+          <div class="text-4xl">🔒</div>
+          <h2 class="text-sm font-extrabold text-white">مرحله ۴ — بالغ</h2>
+          <p class="text-[11px] text-slate-400 leading-relaxed">پس از ۳۰ روز پیوستگی باز می‌شود.</p>
+        </div>
+      </section>
+
+      <section id="stage-5" class="stage-content stage-panel mt-4 hidden">
+        <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-8 text-center space-y-2">
+          <div class="text-4xl">🔒</div>
+          <h2 class="text-sm font-extrabold text-white">مرحله ۵ — رهبر قله</h2>
+          <p class="text-[11px] text-slate-400 leading-relaxed">بالاترین قله. برای رسیدن به اینجا، مسیر طولانی در پیش است.</p>
+        </div>
+      </section>
+    </main>
+
+    <div id="modal-root"></div>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

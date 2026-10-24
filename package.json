@@ -1,0 +1,16 @@
+{
+  "name": "snow-leopard",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "پلنگ برفی — یار هم‌سفر خودمراقبتی. آفلاین، خصوصی، رایگان.",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "check": "python3 tools/check_contracts.py",
+    "graph": "python3 tools/build_graph.py",
+    "serve": "python3 -m http.server 8080",
+    "verify": "npm run check && npm test"
+  },
+  "keywords": ["self-care", "pwa", "persian", "offline-first", "snow-leopard"],
+  "license": "MIT"
+}

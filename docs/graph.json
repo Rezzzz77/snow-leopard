@@ -1,0 +1,589 @@
+{
+  "meta": {
+    "project": "snow-leopard",
+    "title": "پلنگ برفی — خودمراقبتی",
+    "schema": 1,
+    "generator": "tools/build_graph.py",
+    "counts": {
+      "nodes": 48,
+      "edges": 57
+    }
+  },
+  "nodes": [
+    {
+      "id": "file:manifest.json",
+      "label": "manifest.json",
+      "type": "config",
+      "desc": "تنظیمات PWA"
+    },
+    {
+      "id": "file:package.json",
+      "label": "package.json",
+      "type": "config",
+      "desc": "اسکریپت‌ها"
+    },
+    {
+      "id": "file:README.md",
+      "label": "README.md",
+      "type": "doc",
+      "desc": "مستندات"
+    },
+    {
+      "id": "file:docs/MEMORY.md",
+      "label": "docs/MEMORY.md",
+      "type": "doc",
+      "desc": "حافظه پروژه"
+    },
+    {
+      "id": "dom:stage-1",
+      "label": "#stage-1",
+      "type": "dom"
+    },
+    {
+      "id": "dom:stage-2",
+      "label": "#stage-2",
+      "type": "dom"
+    },
+    {
+      "id": "dom:stage-3",
+      "label": "#stage-3",
+      "type": "dom"
+    },
+    {
+      "id": "dom:stage-4",
+      "label": "#stage-4",
+      "type": "dom"
+    },
+    {
+      "id": "dom:stage-5",
+      "label": "#stage-5",
+      "type": "dom"
+    },
+    {
+      "id": "file:index.html",
+      "label": "index.html",
+      "type": "entry",
+      "desc": "رابط کاربری RTL + پنج بخش مرحله"
+    },
+    {
+      "id": "f:adventure",
+      "label": "ماجراجویی",
+      "type": "feature",
+      "desc": "داستان + کشف"
+    },
+    {
+      "id": "f:breathing",
+      "label": "تنفس",
+      "type": "feature",
+      "desc": "۳ الگو"
+    },
+    {
+      "id": "f:coach",
+      "label": "کوچ",
+      "type": "feature",
+      "desc": "اقدام بعدی"
+    },
+    {
+      "id": "f:energy",
+      "label": "انرژی",
+      "type": "feature",
+      "desc": "سقف ۱۵۰ روزانه"
+    },
+    {
+      "id": "f:export",
+      "label": "خروجی/ورود داده",
+      "type": "feature",
+      "desc": "مالکیت کاربر"
+    },
+    {
+      "id": "f:goals",
+      "label": "اهداف روزانه",
+      "type": "feature",
+      "desc": "۵ نوع + ریست شبانه"
+    },
+    {
+      "id": "f:leopard",
+      "label": "کاراکتر پلنگ برفی",
+      "type": "feature",
+      "desc": "۵ مرحله رشد"
+    },
+    {
+      "id": "f:mood",
+      "label": "ردیاب حال",
+      "type": "feature",
+      "desc": "۵ سطح + نمودار"
+    },
+    {
+      "id": "f:offline",
+      "label": "آفلاین",
+      "type": "feature",
+      "desc": "Service Worker"
+    },
+    {
+      "id": "f:pwa",
+      "label": "نصب‌پذیر",
+      "type": "feature",
+      "desc": "manifest + آیکون"
+    },
+    {
+      "id": "f:reflections",
+      "label": "تأمل",
+      "type": "feature",
+      "desc": "پرامپت + تگ + صدا"
+    },
+    {
+      "id": "f:snowflakes",
+      "label": "برف",
+      "type": "feature",
+      "desc": "ارز درون‌برنامه‌ای"
+    },
+    {
+      "id": "f:streak",
+      "label": "زنجیره",
+      "type": "feature",
+      "desc": "۷ روزه + تعمیر"
+    },
+    {
+      "id": "f:welcome",
+      "label": "خوش‌آمد و شروع سفر",
+      "type": "feature",
+      "desc": "نام + چرا"
+    },
+    {
+      "id": "f:wipe",
+      "label": "حق حذف",
+      "type": "feature",
+      "desc": "پاک‌سازی کامل"
+    },
+    {
+      "id": "f:xp",
+      "label": "سیستم XP",
+      "type": "feature",
+      "desc": "از اهداف، تأمل، تنفس"
+    },
+    {
+      "id": "file:app.js",
+      "label": "app.js",
+      "type": "module",
+      "desc": "منطق اصلی، رندرها، مودال‌ها"
+    },
+    {
+      "id": "file:src/coach.js",
+      "label": "src/coach.js",
+      "type": "module",
+      "desc": "اقدام بعدی + انگیزه + پیشرفت"
+    },
+    {
+      "id": "file:src/db.js",
+      "label": "src/db.js",
+      "type": "module",
+      "desc": "localStorage + export/import"
+    },
+    {
+      "id": "file:src/defaults.js",
+      "label": "src/defaults.js",
+      "type": "module",
+      "desc": "داده پیش‌فرض"
+    },
+    {
+      "id": "file:src/leopard.js",
+      "label": "src/leopard.js",
+      "type": "module",
+      "desc": "موتور رشد، انرژی، زنجیره"
+    },
+    {
+      "id": "file:src/prompts.js",
+      "label": "src/prompts.js",
+      "type": "module",
+      "desc": "۶۲ پرامپت تأمل"
+    },
+    {
+      "id": "file:src/stories.js",
+      "label": "src/stories.js",
+      "type": "module",
+      "desc": "۳۲ داستان + کشف‌ها"
+    },
+    {
+      "id": "file:src/theme.js",
+      "label": "src/theme.js",
+      "type": "module",
+      "desc": "تم بصری پنج مرحله"
+    },
+    {
+      "id": "file:sw.js",
+      "label": "sw.js",
+      "type": "module",
+      "desc": "Service Worker — کش آفلاین"
+    },
+    {
+      "id": "file:tools/build_graph.py",
+      "label": "tools/build_graph.py",
+      "type": "module",
+      "desc": "تولید گراف"
+    },
+    {
+      "id": "file:tools/check_contracts.py",
+      "label": "tools/check_contracts.py",
+      "type": "module",
+      "desc": "تست قرارداد"
+    },
+    {
+      "id": "file:tools/extract_leopard.py",
+      "label": "tools/extract_leopard.py",
+      "type": "module",
+      "desc": "استخراج کاراکتر از تصویر"
+    },
+    {
+      "id": "file:tools/make_icons.py",
+      "label": "tools/make_icons.py",
+      "type": "module",
+      "desc": "تولید آیکون PWA"
+    },
+    {
+      "id": "stage:s1",
+      "label": "مرحله ۱ — جوجه",
+      "type": "stage",
+      "period": "۷۲ ساعت",
+      "color": "#6ba3d6"
+    },
+    {
+      "id": "stage:s2",
+      "label": "مرحله ۲ — نوجوان",
+      "type": "stage",
+      "period": "۷ روز",
+      "color": "#52b788"
+    },
+    {
+      "id": "stage:s3",
+      "label": "مرحله ۳ — جوان",
+      "type": "stage",
+      "period": "۳۰ روز",
+      "color": "#d99a4e"
+    },
+    {
+      "id": "stage:s4",
+      "label": "مرحله ۴ — بالغ",
+      "type": "stage",
+      "period": "۹۰ روز",
+      "color": "#9b7ede"
+    },
+    {
+      "id": "stage:s5",
+      "label": "مرحله ۵ — رهبر قله",
+      "type": "stage",
+      "period": "مستمر",
+      "color": "#e0b94a"
+    },
+    {
+      "id": "data:localstorage",
+      "label": "localStorage",
+      "type": "store",
+      "desc": "تنها منبع حقیقت"
+    },
+    {
+      "id": "data:no-cloud",
+      "label": "بدون ابر",
+      "type": "store",
+      "desc": "صفر درخواست شبکه"
+    },
+    {
+      "id": "file:assets/css/app.css",
+      "label": "assets/css/app.css",
+      "type": "style",
+      "desc": "استایل و انیمیشن"
+    },
+    {
+      "id": "file:assets/fonts/fonts.css",
+      "label": "assets/fonts/fonts.css",
+      "type": "style",
+      "desc": "Vazirmatn self-hosted"
+    }
+  ],
+  "edges": [
+    {
+      "source": "dom:stage-1",
+      "target": "stage:s1",
+      "type": "represents"
+    },
+    {
+      "source": "dom:stage-2",
+      "target": "stage:s2",
+      "type": "represents"
+    },
+    {
+      "source": "dom:stage-3",
+      "target": "stage:s3",
+      "type": "represents"
+    },
+    {
+      "source": "dom:stage-4",
+      "target": "stage:s4",
+      "type": "represents"
+    },
+    {
+      "source": "dom:stage-5",
+      "target": "stage:s5",
+      "type": "represents"
+    },
+    {
+      "source": "f:adventure",
+      "target": "file:src/stories.js",
+      "type": "implemented_in"
+    },
+    {
+      "source": "f:breathing",
+      "target": "file:src/defaults.js",
+      "type": "implemented_in"
+    },
+    {
+      "source": "f:coach",
+      "target": "file:src/coach.js",
+      "type": "implemented_in"
+    },
+    {
+      "source": "f:energy",
+      "target": "file:src/leopard.js",
+      "type": "implemented_in"
+    },
+    {
+      "source": "f:export",
+      "target": "file:src/db.js",
+      "type": "implemented_in"
+    },
+    {
+      "source": "f:goals",
+      "target": "file:src/defaults.js",
+      "type": "implemented_in"
+    },
+    {
+      "source": "f:leopard",
+      "target": "file:src/leopard.js",
+      "type": "implemented_in"
+    },
+    {
+      "source": "f:mood",
+      "target": "file:src/defaults.js",
+      "type": "implemented_in"
+    },
+    {
+      "source": "f:offline",
+      "target": "file:sw.js",
+      "type": "implemented_in"
+    },
+    {
+      "source": "f:pwa",
+      "target": "file:manifest.json",
+      "type": "implemented_in"
+    },
+    {
+      "source": "f:reflections",
+      "target": "file:src/prompts.js",
+      "type": "implemented_in"
+    },
+    {
+      "source": "f:snowflakes",
+      "target": "file:src/leopard.js",
+      "type": "implemented_in"
+    },
+    {
+      "source": "f:streak",
+      "target": "file:src/leopard.js",
+      "type": "implemented_in"
+    },
+    {
+      "source": "f:welcome",
+      "target": "file:app.js",
+      "type": "implemented_in"
+    },
+    {
+      "source": "f:wipe",
+      "target": "file:src/db.js",
+      "type": "implemented_in"
+    },
+    {
+      "source": "f:xp",
+      "target": "file:src/leopard.js",
+      "type": "implemented_in"
+    },
+    {
+      "source": "file:README.md",
+      "target": "file:docs/MEMORY.md",
+      "type": "references"
+    },
+    {
+      "source": "file:app.js",
+      "target": "data:localstorage",
+      "type": "uses"
+    },
+    {
+      "source": "file:app.js",
+      "target": "file:src/coach.js",
+      "type": "imports"
+    },
+    {
+      "source": "file:app.js",
+      "target": "file:src/db.js",
+      "type": "imports"
+    },
+    {
+      "source": "file:app.js",
+      "target": "file:src/defaults.js",
+      "type": "imports"
+    },
+    {
+      "source": "file:app.js",
+      "target": "file:src/leopard.js",
+      "type": "imports"
+    },
+    {
+      "source": "file:app.js",
+      "target": "file:src/prompts.js",
+      "type": "imports"
+    },
+    {
+      "source": "file:app.js",
+      "target": "file:src/stories.js",
+      "type": "imports"
+    },
+    {
+      "source": "file:app.js",
+      "target": "file:src/theme.js",
+      "type": "imports"
+    },
+    {
+      "source": "file:index.html",
+      "target": "dom:stage-1",
+      "type": "contains"
+    },
+    {
+      "source": "file:index.html",
+      "target": "dom:stage-2",
+      "type": "contains"
+    },
+    {
+      "source": "file:index.html",
+      "target": "dom:stage-3",
+      "type": "contains"
+    },
+    {
+      "source": "file:index.html",
+      "target": "dom:stage-4",
+      "type": "contains"
+    },
+    {
+      "source": "file:index.html",
+      "target": "dom:stage-5",
+      "type": "contains"
+    },
+    {
+      "source": "file:index.html",
+      "target": "file:app.js",
+      "type": "loads"
+    },
+    {
+      "source": "file:index.html",
+      "target": "file:assets/css/app.css",
+      "type": "styles"
+    },
+    {
+      "source": "file:index.html",
+      "target": "file:assets/fonts/fonts.css",
+      "type": "styles"
+    },
+    {
+      "source": "file:index.html",
+      "target": "file:manifest.json",
+      "type": "declares"
+    },
+    {
+      "source": "file:index.html",
+      "target": "file:sw.js",
+      "type": "registers"
+    },
+    {
+      "source": "file:src/coach.js",
+      "target": "file:src/leopard.js",
+      "type": "imports"
+    },
+    {
+      "source": "file:src/db.js",
+      "target": "data:localstorage",
+      "type": "reads-writes"
+    },
+    {
+      "source": "file:src/db.js",
+      "target": "file:src/defaults.js",
+      "type": "imports"
+    },
+    {
+      "source": "file:src/leopard.js",
+      "target": "file:src/stories.js",
+      "type": "imports"
+    },
+    {
+      "source": "file:tools/check_contracts.py",
+      "target": "file:app.js",
+      "type": "validates"
+    },
+    {
+      "source": "file:tools/extract_leopard.py",
+      "target": "file:index.html",
+      "type": "provides-assets"
+    },
+    {
+      "source": "file:tools/make_icons.py",
+      "target": "file:manifest.json",
+      "type": "informs"
+    },
+    {
+      "source": "stage:s1",
+      "target": "file:app.js",
+      "type": "rendered_by"
+    },
+    {
+      "source": "stage:s1",
+      "target": "file:src/theme.js",
+      "type": "themed_by"
+    },
+    {
+      "source": "stage:s2",
+      "target": "file:app.js",
+      "type": "rendered_by"
+    },
+    {
+      "source": "stage:s2",
+      "target": "file:src/theme.js",
+      "type": "themed_by"
+    },
+    {
+      "source": "stage:s3",
+      "target": "file:app.js",
+      "type": "rendered_by"
+    },
+    {
+      "source": "stage:s3",
+      "target": "file:src/theme.js",
+      "type": "themed_by"
+    },
+    {
+      "source": "stage:s4",
+      "target": "file:app.js",
+      "type": "rendered_by"
+    },
+    {
+      "source": "stage:s4",
+      "target": "file:src/theme.js",
+      "type": "themed_by"
+    },
+    {
+      "source": "stage:s5",
+      "target": "file:app.js",
+      "type": "rendered_by"
+    },
+    {
+      "source": "stage:s5",
+      "target": "file:src/theme.js",
+      "type": "themed_by"
+    }
+  ]
+}

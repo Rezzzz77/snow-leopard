@@ -1,0 +1,42 @@
+name: check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Syntax — app.js
+        run: node --input-type=module --check < app.js
+      - name: Syntax — sw.js
+        run: node --check sw.js
+      - name: Syntax — src modules
+        run: |
+          for f in src/*.js; do
+            node --input-type=module --check < "$f" || exit 1
+          done
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Contract test — HTML ↔ JS
+        run: python3 tools/check_contracts.py
+      - name: Unit tests
+        run: node --test tests/*.test.mjs
+      - name: Graph is up to date
+        run: |
+          python3 tools/build_graph.py
+          git diff --exit-code docs/graph.json || {
+            echo "::error::docs/graph.json با سورس همگام نیست"
+            exit 1
+          }
