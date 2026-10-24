@@ -5,11 +5,41 @@
     "schema": 1,
     "generator": "tools/build_graph.py",
     "counts": {
-      "nodes": 58,
-      "edges": 67
+      "nodes": 67,
+      "edges": 71
     }
   },
   "nodes": [
+    {
+      "id": "file:assets/audio/shore.ogg",
+      "label": "assets/audio/shore.ogg",
+      "type": "asset",
+      "desc": "صدای موج"
+    },
+    {
+      "id": "file:assets/audio/silence.ogg",
+      "label": "assets/audio/silence.ogg",
+      "type": "asset",
+      "desc": "سکوت تمرکز"
+    },
+    {
+      "id": "file:assets/audio/snow.ogg",
+      "label": "assets/audio/snow.ogg",
+      "type": "asset",
+      "desc": "صدای برف (پروسدورال)"
+    },
+    {
+      "id": "file:assets/audio/water.ogg",
+      "label": "assets/audio/water.ogg",
+      "type": "asset",
+      "desc": "صدای آب"
+    },
+    {
+      "id": "file:assets/audio/wind.ogg",
+      "label": "assets/audio/wind.ogg",
+      "type": "asset",
+      "desc": "صدای باد"
+    },
     {
       "id": "file:manifest.json",
       "label": "manifest.json",
@@ -108,6 +138,12 @@
       "desc": "۲۱ روز"
     },
     {
+      "id": "f:i18n",
+      "label": "چندزبانه",
+      "type": "feature",
+      "desc": "فارسی + English"
+    },
+    {
       "id": "f:insights",
       "label": "بینش",
       "type": "feature",
@@ -180,6 +216,12 @@
       "desc": "ارز درون‌برنامه‌ای"
     },
     {
+      "id": "f:sound",
+      "label": "صداهای محیطی",
+      "type": "feature",
+      "desc": "۵ soundscape لوکال"
+    },
+    {
       "id": "f:streak",
       "label": "زنجیره",
       "type": "feature",
@@ -216,6 +258,12 @@
       "desc": "منطق اصلی، رندرها، مودال‌ها"
     },
     {
+      "id": "file:src/audio.js",
+      "label": "src/audio.js",
+      "type": "module",
+      "desc": "پخش صداهای محیطی لوکال"
+    },
+    {
       "id": "file:src/coach.js",
       "label": "src/coach.js",
       "type": "module",
@@ -232,6 +280,12 @@
       "label": "src/defaults.js",
       "type": "module",
       "desc": "داده پیش‌فرض"
+    },
+    {
+      "id": "file:src/i18n.js",
+      "label": "src/i18n.js",
+      "type": "module",
+      "desc": "فارسی + انگلیسی"
     },
     {
       "id": "file:src/insights.js",
@@ -421,6 +475,11 @@
       "type": "implemented_in"
     },
     {
+      "source": "f:i18n",
+      "target": "file:src/i18n.js",
+      "type": "implemented_in"
+    },
+    {
       "source": "f:insights",
       "target": "file:src/insights.js",
       "type": "implemented_in"
@@ -481,6 +540,11 @@
       "type": "implemented_in"
     },
     {
+      "source": "f:sound",
+      "target": "file:src/audio.js",
+      "type": "implemented_in"
+    },
+    {
       "source": "f:streak",
       "target": "file:src/leopard.js",
       "type": "implemented_in"
@@ -517,6 +581,11 @@
     },
     {
       "source": "file:app.js",
+      "target": "file:src/audio.js",
+      "type": "imports"
+    },
+    {
+      "source": "file:app.js",
       "target": "file:src/coach.js",
       "type": "imports"
     },
@@ -528,6 +597,11 @@
     {
       "source": "file:app.js",
       "target": "file:src/defaults.js",
+      "type": "imports"
+    },
+    {
+      "source": "file:app.js",
+      "target": "file:src/i18n.js",
       "type": "imports"
     },
     {

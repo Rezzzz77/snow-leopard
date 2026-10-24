@@ -66,6 +66,17 @@ def darken(crop: Image.Image, color) -> Image.Image:
         target[:, :, i] = BASE_BG[i] + (color[i] - BASE_BG[i]) * inten * 0.40
 
     mixed = a * (1 - t) + target * t
+
+    # روشن‌تر کردن خز (فقط پیکسل‌های خنثی = کاراکتر)
+    fur_mask = ((1 - t) > 0.5).reshape(mixed.shape[0], mixed.shape[1])
+    lum2 = mixed.mean(axis=2, keepdims=True)
+    # gamma < 1 → روشن‌تر
+    boosted = 255.0 * np.power(np.clip(lum2 / 255.0, 0, 1), 0.86)
+    ratio = np.where(lum2 > 1, boosted / np.maximum(lum2, 1), 1.0)
+    scale = 1.0 + (ratio - 1.0) * 0.55          # اعمال نیمه‌شدت
+    lifted = mixed * scale
+    mixed = np.where(fur_mask[:, :, None], lifted, mixed)
+
     return Image.fromarray(np.clip(mixed, 0, 255).astype(np.uint8), "RGB")
 
 

@@ -1,4 +1,4 @@
-const CACHE = 'snow-leopard-v2';
+const CACHE = 'snow-leopard-v3';
 
 const PRECACHE = [
   './',
@@ -22,7 +22,15 @@ const PRECACHE = [
   './src/coach.js',
   './src/prompts.js',
   './src/stories.js',
-  './src/theme.js'
+  './src/theme.js',
+  './src/insights.js',
+  './src/quests.js',
+  './src/audio.js',
+  './assets/audio/snow.ogg',
+  './assets/audio/wind.ogg',
+  './assets/audio/water.ogg',
+  './assets/audio/shore.ogg',
+  './assets/audio/silence.ogg'
 ];
 
 self.addEventListener('install', (event) => {

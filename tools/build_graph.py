@@ -28,6 +28,13 @@ FILES = [
     ("src/stories.js","module","۳۲ داستان + کشف‌ها"),
     ("src/insights.js","module","تحلیل الگوها، روند، خلاصه"),
     ("src/quests.js","module","۱۳ مأموریت با جایزه برف"),
+    ("src/audio.js","module","پخش صداهای محیطی لوکال"),
+    ("src/i18n.js","module","فارسی + انگلیسی"),
+    ("assets/audio/snow.ogg","asset","صدای برف (پروسدورال)"),
+    ("assets/audio/wind.ogg","asset","صدای باد"),
+    ("assets/audio/water.ogg","asset","صدای آب"),
+    ("assets/audio/shore.ogg","asset","صدای موج"),
+    ("assets/audio/silence.ogg","asset","سکوت تمرکز"),
     ("assets/css/app.css","style","استایل و انیمیشن"),
     ("assets/fonts/fonts.css","style","Vazirmatn self-hosted"),
     ("tools/build_graph.py","module","تولید گراف"),
@@ -76,6 +83,8 @@ FEATURES = [
     ("f:vibes","وایب","۴ نوع"),
     ("f:ritual","آیین شخصی","مرحله ۴"),
     ("f:mentor","منتورینگ","یادداشت مرحله ۵"),
+    ("f:sound","صداهای محیطی","۵ soundscape لوکال"),
+    ("f:i18n","چندزبانه","فارسی + English"),
 ]
 for fid,l,d in FEATURES: node(fid, l, "feature", desc=d)
 
@@ -87,7 +96,7 @@ edge("file:index.html","file:manifest.json","declares")
 edge("file:index.html","file:sw.js","registers")
 edge("file:index.html","file:assets/css/app.css","styles")
 edge("file:index.html","file:assets/fonts/fonts.css","styles")
-for m in ["theme","defaults","db","leopard","coach","prompts","stories","insights","quests"]:
+for m in ["theme","defaults","db","leopard","coach","prompts","stories","insights","quests","audio","i18n"]:
     edge("file:app.js", f"file:src/{m}.js","imports")
 edge("file:src/coach.js","file:src/leopard.js","imports")
 edge("file:src/leopard.js","file:src/stories.js","imports")
@@ -117,6 +126,7 @@ FE = {
  "f:journal":"file:src/defaults.js","f:habits":"file:src/defaults.js",
  "f:pack":"file:app.js","f:vibes":"file:app.js","f:ritual":"file:app.js",
  "f:mentor":"file:app.js",
+ "f:sound":"file:src/audio.js","f:i18n":"file:src/i18n.js",
 }
 for fid,t in FE.items(): edge(fid, t, "implemented_in")
 
