@@ -209,29 +209,163 @@
             شروع ماجراجویی
           </button>
         </div>
-      </section>
-
-      <section id="stage-3" class="stage-content stage-panel mt-4 hidden">
-        <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-8 text-center space-y-2">
-          <div class="text-4xl">🔒</div>
-          <h2 class="text-sm font-extrabold text-white">مرحله ۳ — جوان</h2>
-          <p class="text-[11px] text-slate-400 leading-relaxed">با تکمیل زنجیره هفت روزه مرحله ۲، این مرحله باز می‌شود.</p>
+        <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-4">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-sm font-extrabold text-white">مأموریت‌ها</h2>
+            <span id="quest-progress" class="text-[10px] text-slate-500 tabular-nums">۰ / ۰</span>
+          </div>
+          <div id="quests-list" class="space-y-1.5"></div>
         </div>
       </section>
 
-      <section id="stage-4" class="stage-content stage-panel mt-4 hidden">
-        <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-8 text-center space-y-2">
-          <div class="text-4xl">🔒</div>
-          <h2 class="text-sm font-extrabold text-white">مرحله ۴ — بالغ</h2>
-          <p class="text-[11px] text-slate-400 leading-relaxed">پس از ۳۰ روز پیوستگی باز می‌شود.</p>
+      <section id="stage-3" class="stage-content stage-panel mt-4 space-y-3 hidden">
+        <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-4">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-sm font-extrabold text-white">بینش این هفته</h2>
+            <span class="text-[10px] text-slate-500">تحلیل لوکال</span>
+          </div>
+          <p id="insight-summary" class="text-[11px] text-slate-300 leading-relaxed mb-3">—</p>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-2.5">
+              <div class="text-[9px] text-slate-500 mb-0.5">اهداف کامل</div>
+              <div id="stat-goals" class="text-sm font-bold text-amber-300 tabular-nums">۰</div>
+            </div>
+            <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-2.5">
+              <div class="text-[9px] text-slate-500 mb-0.5">تأمل‌ها</div>
+              <div id="stat-reflections" class="text-sm font-bold text-sky-300 tabular-nums">۰</div>
+            </div>
+            <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-2.5">
+              <div class="text-[9px] text-slate-500 mb-0.5">میانگین حال</div>
+              <div id="stat-mood" class="text-sm font-bold text-emerald-300 tabular-nums">۰</div>
+            </div>
+            <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-2.5">
+              <div class="text-[9px] text-slate-500 mb-0.5">روزهای فعال</div>
+              <div id="stat-days" class="text-sm font-bold text-violet-300 tabular-nums">۰</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-4">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-sm font-extrabold text-white">هدف سی روزه</h2>
+            <button onclick="openS3GoalModal()" aria-label="هدف جدید" class="w-7 h-7 rounded-full bg-amber-600 hover:bg-amber-500 text-white text-sm font-bold transition">+</button>
+          </div>
+          <div id="s3-goals-list" class="space-y-2"></div>
+        </div>
+
+        <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-4">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-sm font-extrabold text-white">ژورنال عمیق</h2>
+            <button onclick="openJournalModal()" aria-label="نوشتن" class="w-7 h-7 rounded-full bg-amber-600 hover:bg-amber-500 text-white text-sm font-bold transition">✎</button>
+          </div>
+          <div id="journal-list" class="space-y-2"></div>
+        </div>
+
+        <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-4">
+          <h2 class="text-sm font-extrabold text-white mb-3">عادت‌های بلندمدت</h2>
+          <div id="habits-list" class="space-y-2"></div>
+          <button onclick="openHabitModal()" class="w-full mt-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl py-2 text-[11px] font-bold transition">+ افزودن عادت</button>
+        </div>
+
+        <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-4">
+          <h2 class="text-sm font-extrabold text-white mb-2">معیار عبور مرحله ۳</h2>
+          <div id="s3-pass-criteria" class="space-y-1.5 text-[11px]"></div>
+          <div class="mt-3 space-y-1">
+            <div class="flex justify-between text-[10px] text-slate-400">
+              <span id="s3-next-label">تا مرحله بعد</span>
+              <span id="s3-next-pct">۰٪</span>
+            </div>
+            <div class="progress-track h-1.5">
+              <div id="s3-next-bar" class="progress-fill bg-amber-500" style="width: 0%"></div>
+            </div>
+          </div>
         </div>
       </section>
 
-      <section id="stage-5" class="stage-content stage-panel mt-4 hidden">
-        <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-8 text-center space-y-2">
-          <div class="text-4xl">🔒</div>
-          <h2 class="text-sm font-extrabold text-white">مرحله ۵ — رهبر قله</h2>
-          <p class="text-[11px] text-slate-400 leading-relaxed">بالاترین قله. برای رسیدن به اینجا، مسیر طولانی در پیش است.</p>
+      <section id="stage-4" class="stage-content stage-panel mt-4 space-y-3 hidden">
+        <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-4">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-sm font-extrabold text-white">پک من</h2>
+            <span class="text-[10px] text-slate-500">حداکثر ۵ نفر</span>
+          </div>
+          <p class="text-[11px] text-slate-400 leading-relaxed mb-3">
+            افرادی که در مسیر خودمراقبتی همراهت هستند. بدون فید، بدون مقایسه — فقط نزدیکان.
+          </p>
+          <div id="pack-list" class="space-y-2"></div>
+          <button onclick="openPackModal()" class="w-full mt-2 bg-violet-600 hover:bg-violet-500 text-white rounded-xl py-2 text-[11px] font-bold transition">+ افزودن به پک</button>
+        </div>
+
+        <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-4">
+          <h2 class="text-sm font-extrabold text-white mb-3">ارسال انرژی مثبت</h2>
+          <p class="text-[11px] text-slate-400 leading-relaxed mb-3">
+            یک «وایب» کوتاه بفرست — فقط برای پک خودت.
+          </p>
+          <div id="vibe-options" class="grid grid-cols-4 gap-1.5"></div>
+          <div class="mt-3 text-[10px] text-slate-500">
+            ارسال‌شده: <span id="vibes-count" class="text-violet-300 font-bold tabular-nums">۰</span>
+          </div>
+        </div>
+
+        <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-4">
+          <h2 class="text-sm font-extrabold text-white mb-2">آیین شخصی</h2>
+          <p class="text-[11px] text-slate-400 leading-relaxed mb-3">
+            کاری که فقط مال توست و هر روز انجامش می‌دهی.
+          </p>
+          <div id="ritual-box"></div>
+        </div>
+
+        <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-4">
+          <h2 class="text-sm font-extrabold text-white mb-2">معیار عبور مرحله ۴</h2>
+          <div id="s4-pass-criteria" class="space-y-1.5 text-[11px]"></div>
+        </div>
+      </section>
+
+      <section id="stage-5" class="stage-content stage-panel mt-4 space-y-3 hidden">
+        <div class="bg-gradient-to-br from-yellow-900/40 to-slate-900 border border-yellow-600/40 rounded-2xl p-5 text-center space-y-2">
+          <div class="text-3xl">🏔</div>
+          <h2 class="text-base font-extrabold text-yellow-300">رهبر قله</h2>
+          <p class="text-[11px] text-yellow-100/70 leading-relaxed">
+            به بالاترین قله رسیدی. حالا وقت آن است که راه را نشان بدهی.
+          </p>
+        </div>
+
+        <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-4">
+          <h2 class="text-sm font-extrabold text-white mb-3">پنج استاندارد راهبر</h2>
+          <div id="s5-standards" class="space-y-2 text-[11px]"></div>
+        </div>
+
+        <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-4">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-sm font-extrabold text-white">یادداشت منتورینگ</h2>
+            <button onclick="openMentorModal()" aria-label="یادداشت" class="w-7 h-7 rounded-full bg-yellow-600 hover:bg-yellow-500 text-slate-950 text-sm font-bold transition">+</button>
+          </div>
+          <div id="mentor-list" class="space-y-2"></div>
+        </div>
+
+        <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-4">
+          <h2 class="text-sm font-extrabold text-white mb-2">نامه به خودت</h2>
+          <p class="text-[10px] text-slate-500 mb-2">چیزی بنویس که بعداً بخواهی به یاد بیاوری.</p>
+          <textarea id="legacy-input" rows="4" placeholder="وقتی به این قله رسیدم، فهمیدم که…"
+            class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white placeholder:text-slate-600 focus:border-yellow-500 outline-none resize-none"></textarea>
+          <button onclick="saveLegacy()" class="w-full mt-2 bg-yellow-600 hover:bg-yellow-500 text-slate-950 rounded-xl py-2 text-[11px] font-bold transition">ذخیره نامه</button>
+        </div>
+
+        <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-4">
+          <h2 class="text-sm font-extrabold text-white mb-3">میراث عددی</h2>
+          <div class="grid grid-cols-3 gap-2">
+            <div class="bg-slate-950/60 rounded-xl p-2.5 text-center">
+              <div id="legacy-xp" class="text-sm font-bold text-yellow-300 tabular-nums">۰</div>
+              <div class="text-[9px] text-slate-500 mt-0.5">XP</div>
+            </div>
+            <div class="bg-slate-950/60 rounded-xl p-2.5 text-center">
+              <div id="legacy-days" class="text-sm font-bold text-yellow-300 tabular-nums">۰</div>
+              <div class="text-[9px] text-slate-500 mt-0.5">روز فعال</div>
+            </div>
+            <div class="bg-slate-950/60 rounded-xl p-2.5 text-center">
+              <div id="legacy-pack" class="text-sm font-bold text-yellow-300 tabular-nums">۰</div>
+              <div class="text-[9px] text-slate-500 mt-0.5">همراه</div>
+            </div>
+          </div>
         </div>
       </section>
     </main>

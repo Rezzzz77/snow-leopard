@@ -11,6 +11,10 @@ import {
 } from './src/leopard.js';
 import { generateCoachCard } from './src/coach.js';
 import { getStageTheme, STAGE_ORDER } from './src/theme.js';
+import { computeStats, moodTrend, weeklySummary, smartSuggestion, tagDistribution } from './src/insights.js';
+import { checkQuests, claimQuest, questProgress } from './src/quests.js';
+import { S3_PASS, S4_PASS, S5_STANDARDS, DEEP_REFLECTION_PROMPTS } from './src/defaults.js';
+import { nextStageProgress, stage3Met, stage4Met, countActiveDays } from './src/leopard.js';
 
 let appState = resetDailyGoals(loadFromStorage());
 let activeStageView = 1;
@@ -711,6 +715,417 @@ function startJourney() {
   boot();
 }
 
+
+/* ============================================================
+   مرحله ۲ — مأموریت‌ها
+   ============================================================ */
+
+function renderQuests() {
+  const box = el('quests-list');
+  if (!box) return;
+
+  const all = checkQuests(appState);
+  const prog = questProgress(appState);
+  if (el('quest-progress')) el('quest-progress').textContent = `${toFa(prog.claimed)} / ${toFa(prog.total)}`;
+
+  const visible = all.filter((q) => q.done || !q.claimed).slice(0, 6);
+
+  box.innerHTML = visible.map((q) => {
+    const canClaim = q.done && !q.claimed;
+    return `<div class="flex items-center gap-2 p-2 rounded-xl border ${q.claimed ? 'bg-slate-950/40 border-slate-800/60' : canClaim ? 'bg-emerald-950/40 border-emerald-700/50' : 'bg-slate-950/60 border-slate-800'}">
+      <span class="text-sm shrink-0">${q.claimed ? '✅' : q.done ? '🎁' : '⭕'}</span>
+      <div class="flex-1 min-w-0">
+        <div class="text-[11px] font-bold ${q.claimed ? 'text-slate-500 line-through' : 'text-white'}">${esc(q.title)}</div>
+        <div class="text-[9px] text-slate-500 truncate">${esc(q.desc)}</div>
+      </div>
+      ${canClaim
+        ? `<button onclick="doClaimQuest('${q.key}')" class="text-[9px] bg-emerald-600 hover:bg-emerald-500 text-white px-2 py-1 rounded-lg font-bold shrink-0 transition">+${toFa(q.reward)} ❄</button>`
+        : `<span class="text-[9px] text-slate-600 shrink-0 tabular-nums">${toFa(q.reward)} ❄</span>`}
+    </div>`;
+  }).join('');
+}
+
+function doClaimQuest(key) {
+  const r = claimQuest(appState, key);
+  if (!r.ok) {
+    toast('این مأموریت هنوز آماده نیست.');
+    return;
+  }
+  save();
+  renderQuests();
+  toast(`🎁 ${toFa(r.reward)} برف گرفتی!`);
+}
+
+/* ============================================================
+   مرحله ۳ — جوان
+   ============================================================ */
+
+function renderStage3() {
+  const stats = computeStats(appState);
+
+  if (el('insight-summary')) el('insight-summary').textContent = weeklySummary(appState);
+  if (el('stat-goals')) el('stat-goals').textContent = toFa(stats.doneGoals);
+  if (el('stat-reflections')) el('stat-reflections').textContent = toFa(stats.totalReflections);
+  if (el('stat-mood')) el('stat-mood').textContent = toFa(stats.avgMood || 0);
+  if (el('stat-days')) el('stat-days').textContent = toFa(stats.activeDays);
+
+  // اهداف سی روزه
+  const gbox = el('s3-goals-list');
+  if (gbox) {
+    const goals = appState.s3Goals || [];
+    gbox.innerHTML = goals.length === 0
+      ? `<div class="text-center py-4 text-[11px] text-slate-500">هدف بلندمدتی نداری. یکی اضافه کن.</div>`
+      : goals.map((g, i) => `
+        <div class="flex items-center gap-2 p-2 rounded-xl border ${g.done ? 'bg-amber-950/40 border-amber-700/50' : 'bg-slate-950/60 border-slate-800'}">
+          <button onclick="toggleS3Goal(${i})" class="w-6 h-6 shrink-0 rounded-lg border-2 flex items-center justify-center text-[10px] ${g.done ? 'bg-amber-600 border-amber-400 text-white' : 'border-slate-600 text-transparent'}">✓</button>
+          <span class="text-[11px] flex-1 min-w-0 truncate ${g.done ? 'text-slate-500 line-through' : 'text-white'}">${esc(g.title)}</span>
+          <button onclick="removeS3Goal(${i})" class="text-slate-600 hover:text-red-400 text-[10px] px-1">✕</button>
+        </div>`).join('');
+  }
+
+  // ژورنال
+  const jbox = el('journal-list');
+  if (jbox) {
+    const entries = (appState.journalEntries || []).slice(0, 3);
+    jbox.innerHTML = entries.length === 0
+      ? `<div class="text-center py-4 text-[11px] text-slate-500">هنوز ژورنال عمیقی ننوشتی.</div>`
+      : entries.map((j) => `
+        <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-2.5">
+          <div class="flex justify-between mb-1">
+            <span class="text-[9px] text-amber-400">${esc(j.prompt || 'ژورنال')}</span>
+            <span class="text-[9px] text-slate-600">${fmtDate(j.at)}</span>
+          </div>
+          <p class="text-[11px] text-slate-300 leading-relaxed line-clamp-3">${esc(j.text)}</p>
+        </div>`).join('');
+  }
+
+  // عادت‌ها
+  const hbox = el('habits-list');
+  if (hbox) {
+    const habits = appState.habits || [];
+    hbox.innerHTML = habits.length === 0
+      ? `<div class="text-center py-3 text-[11px] text-slate-500">عادتی ثبت نشده.</div>`
+      : habits.map((h, i) => `
+        <div class="flex items-center justify-between p-2 rounded-xl bg-slate-950/60 border border-slate-800">
+          <span class="text-[11px] text-white truncate">${esc(h.title)}</span>
+          <span class="text-[10px] ${h.streak >= 21 ? 'text-amber-300 font-bold' : 'text-slate-500'} tabular-nums">${toFa(h.streak || 0)} روز</span>
+        </div>`).join('');
+  }
+
+  // معیار عبور
+  const cbox = el('s3-pass-criteria');
+  if (cbox) {
+    cbox.innerHTML = S3_PASS.map((p) => {
+      const ok = checkS3Criterion(p.key, stats);
+      return `<div class="flex items-center gap-2 ${ok ? 'text-amber-200' : 'text-slate-400'}">
+        <span class="text-xs">${ok ? '✅' : '○'}</span><span>${esc(p.text)}</span>
+      </div>`;
+    }).join('');
+  }
+
+  const nxt = nextStageProgress(appState);
+  if (el('s3-next-label')) el('s3-next-label').textContent = nxt.label;
+  if (el('s3-next-pct')) el('s3-next-pct').textContent = `${toFa(nxt.pct)}٪`;
+  if (el('s3-next-bar')) el('s3-next-bar').style.width = `${nxt.pct}%`;
+}
+
+function checkS3Criterion(key, stats) {
+  const days = countActiveDays(appState);
+  switch (key) {
+    case 'ref10': return stats.totalReflections >= 10;
+    case 'activeWeek4': return days >= 28;
+    case 'pattern': return (appState.reflections || []).length >= 15;
+    case 's3goal': return (appState.s3Goals || []).length > 0;
+    case 'knows': return stats.totalBreathing >= 3;
+    default: return false;
+  }
+}
+
+function openS3GoalModal() {
+  openModal(`
+    <h2 class="text-sm font-extrabold text-white mb-3">هدف سی روزه</h2>
+    <input id="s3-goal-title" type="text" placeholder="مثلاً: هر روز بیست دقیقه پیاده‌روی"
+      class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white placeholder:text-slate-600 focus:border-amber-500 outline-none mb-3" />
+    <div class="flex gap-2">
+      <button onclick="closeModal()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl py-2.5 text-xs font-bold transition">انصراف</button>
+      <button onclick="addS3Goal()" class="flex-1 bg-amber-600 hover:bg-amber-500 text-white rounded-xl py-2.5 text-xs font-bold transition">افزودن</button>
+    </div>`);
+}
+
+function addS3Goal() {
+  const t = (el('s3-goal-title')?.value || '').trim();
+  if (!t) { toast('عنوان هدف را بنویس.'); return; }
+  if (!appState.s3Goals) appState.s3Goals = [];
+  appState.s3Goals.push({ title: t, done: false, createdAt: Date.now() });
+  save(); renderStage3(); closeModal();
+}
+
+function toggleS3Goal(i) {
+  const g = appState.s3Goals?.[i];
+  if (!g) return;
+  g.done = !g.done;
+  save(); renderStage3();
+}
+
+function removeS3Goal(i) {
+  appState.s3Goals.splice(i, 1);
+  save(); renderStage3();
+}
+
+function openJournalModal() {
+  const prompt = DEEP_REFLECTION_PROMPTS[Math.floor(Math.random() * DEEP_REFLECTION_PROMPTS.length)];
+  openModal(`
+    <h2 class="text-sm font-extrabold text-white mb-3">ژورنال عمیق</h2>
+    <div class="bg-amber-950/50 border border-amber-800/50 rounded-xl p-3 mb-3">
+      <p id="deep-prompt" class="text-[11px] text-amber-200 leading-relaxed">${esc(prompt)}</p>
+      <button onclick="nextDeepPrompt()" class="text-[10px] text-amber-400 hover:text-amber-300 mt-1.5">پرامپت بعدی ↻</button>
+    </div>
+    <textarea id="journal-text" rows="5" placeholder="هر چه هست، بنویس…"
+      class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white placeholder:text-slate-600 focus:border-amber-500 outline-none resize-none mb-3"></textarea>
+    <div class="flex gap-2">
+      <button onclick="closeModal()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl py-2.5 text-xs font-bold transition">انصراف</button>
+      <button onclick="saveJournal()" class="flex-1 bg-amber-600 hover:bg-amber-500 text-white rounded-xl py-2.5 text-xs font-bold transition">ذخیره</button>
+    </div>`);
+}
+
+let deepPromptCache = '';
+function nextDeepPrompt() {
+  deepPromptCache = DEEP_REFLECTION_PROMPTS[Math.floor(Math.random() * DEEP_REFLECTION_PROMPTS.length)];
+  const p = el('deep-prompt');
+  if (p) p.textContent = deepPromptCache;
+}
+
+function saveJournal() {
+  const t = (el('journal-text')?.value || '').trim();
+  if (!t) { toast('چند جمله بنویس.'); return; }
+  if (!appState.journalEntries) appState.journalEntries = [];
+  const prompt = el('deep-prompt')?.textContent || '';
+  appState.journalEntries.unshift({ text: t, prompt, at: Date.now() });
+  addEnergy(appState, 20, 'journal');
+  appState.snowflakes = (appState.snowflakes || 0) + 10;
+  save(); renderStage3(); closeModal(); toast('ژورنال ذخیره شد 📖');
+}
+
+function openHabitModal() {
+  openModal(`
+    <h2 class="text-sm font-extrabold text-white mb-3">عادت جدید</h2>
+    <input id="habit-title" type="text" placeholder="مثلاً: ده دقیقه کتاب خواندن"
+      class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white placeholder:text-slate-600 focus:border-amber-500 outline-none mb-3" />
+    <div class="flex gap-2">
+      <button onclick="closeModal()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl py-2.5 text-xs font-bold transition">انصراف</button>
+      <button onclick="addHabit()" class="flex-1 bg-amber-600 hover:bg-amber-500 text-white rounded-xl py-2.5 text-xs font-bold transition">افزودن</button>
+    </div>`);
+}
+
+function addHabit() {
+  const t = (el('habit-title')?.value || '').trim();
+  if (!t) { toast('عنوان عادت را بنویس.'); return; }
+  if (!appState.habits) appState.habits = [];
+  appState.habits.push({ title: t, streak: 0, createdAt: Date.now(), lastDone: null });
+  save(); renderStage3(); closeModal();
+}
+
+/* ============================================================
+   مرحله ۴ — بالغ
+   ============================================================ */
+
+const VIBES = [
+  { key: 'wave', label: 'سلام', emoji: '👋' },
+  { key: 'heart', label: 'دلگرمی', emoji: '💚' },
+  { key: 'star', label: 'افتخار', emoji: '⭐' },
+  { key: 'hug', label: 'همراهی', emoji: '🤗' }
+];
+
+function renderStage4() {
+  const pbox = el('pack-list');
+  if (pbox) {
+    const pack = appState.pack || [];
+    pbox.innerHTML = pack.length === 0
+      ? `<div class="text-center py-4 text-[11px] text-slate-500">پک تو خالی است.</div>`
+      : pack.map((p, i) => `
+        <div class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-950/60 border border-slate-800">
+          <span class="text-lg">${p.avatar || '🐾'}</span>
+          <div class="flex-1 min-w-0">
+            <div class="text-[11px] font-bold text-white truncate">${esc(p.name)}</div>
+            <div class="text-[9px] text-slate-500">${esc(p.note || 'همراه مسیر')}</div>
+          </div>
+          <button onclick="removePackMember(${i})" class="text-slate-600 hover:text-red-400 text-[10px] px-1">✕</button>
+        </div>`).join('');
+  }
+
+  const vbox = el('vibe-options');
+  if (vbox) {
+    vbox.innerHTML = VIBES.map((v) => `
+      <button onclick="sendVibe('${v.key}')" class="py-2 rounded-xl bg-slate-950 border border-slate-800 hover:border-violet-500 transition text-center">
+        <div class="text-lg">${v.emoji}</div>
+        <div class="text-[9px] text-slate-500 mt-0.5">${v.label}</div>
+      </button>`).join('');
+  }
+  if (el('vibes-count')) el('vibes-count').textContent = toFa((appState.vibesSent || []).length);
+
+  const rbox = el('ritual-box');
+  if (rbox) {
+    const ritual = appState.ritual || '';
+    rbox.innerHTML = ritual
+      ? `<div class="bg-violet-950/40 border border-violet-700/40 rounded-xl p-3 text-[11px] text-violet-200">${esc(ritual)}</div>
+         <button onclick="editRitual()" class="w-full mt-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl py-2 text-[10px] font-bold transition">ویرایش</button>`
+      : `<button onclick="editRitual()" class="w-full bg-violet-600 hover:bg-violet-500 text-white rounded-xl py-2.5 text-[11px] font-bold transition">تعریف آیین شخصی</button>`;
+  }
+
+  const cbox = el('s4-pass-criteria');
+  if (cbox) {
+    cbox.innerHTML = S4_PASS.map((p) => {
+      const ok = checkS4Criterion(p.key);
+      return `<div class="flex items-center gap-2 ${ok ? 'text-violet-200' : 'text-slate-400'}">
+        <span class="text-xs">${ok ? '✅' : '○'}</span><span>${esc(p.text)}</span>
+      </div>`;
+    }).join('');
+  }
+}
+
+function checkS4Criterion(key) {
+  switch (key) {
+    case 'mentor1': return (appState.pack || []).length >= 1;
+    case 'deepHabit': return (appState.habits || []).some((h) => h.streak >= 21);
+    case 'indep': return (appState.journalEntries || []).length >= 20;
+    case 'ritual': return !!(appState.ritual || '').trim();
+    default: return false;
+  }
+}
+
+function openPackModal() {
+  if ((appState.pack || []).length >= 5) {
+    toast('پک پر است — حداکثر ۵ نفر.');
+    return;
+  }
+  openModal(`
+    <h2 class="text-sm font-extrabold text-white mb-3">افزودن به پک</h2>
+    <input id="pack-name" type="text" placeholder="اسم (یا نام مستعار)"
+      class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white mb-2 focus:border-violet-500 outline-none" />
+    <input id="pack-note" type="text" placeholder="یادداشت (اختیاری)"
+      class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white mb-3 focus:border-violet-500 outline-none" />
+    <div class="flex gap-2">
+      <button onclick="closeModal()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl py-2.5 text-xs font-bold transition">انصراف</button>
+      <button onclick="addPackMember()" class="flex-1 bg-violet-600 hover:bg-violet-500 text-white rounded-xl py-2.5 text-xs font-bold transition">افزودن</button>
+    </div>`);
+}
+
+function addPackMember() {
+  const name = (el('pack-name')?.value || '').trim();
+  if (!name) { toast('اسم را بنویس.'); return; }
+  if (!appState.pack) appState.pack = [];
+  if (appState.pack.length >= 5) { toast('حداکثر ۵ نفر.'); return; }
+  appState.pack.push({ name, note: (el('pack-note')?.value || '').trim(), avatar: '🐾', addedAt: Date.now() });
+  save(); renderStage4(); closeModal();
+}
+
+function removePackMember(i) {
+  appState.pack.splice(i, 1);
+  save(); renderStage4();
+}
+
+function sendVibe(key) {
+  if ((appState.pack || []).length === 0) {
+    toast('اول یک نفر به پک اضافه کن.');
+    return;
+  }
+  if (!appState.vibesSent) appState.vibesSent = [];
+  const v = VIBES.find((x) => x.key === key);
+  appState.vibesSent.push({ key, at: Date.now() });
+  addEnergy(appState, 5, 'vibe');
+  save(); renderStage4();
+  toast(`${v.emoji} فرستاده شد به پک`);
+}
+
+function editRitual() {
+  openModal(`
+    <h2 class="text-sm font-extrabold text-white mb-3">آیین شخصی</h2>
+    <textarea id="ritual-input" rows="3" placeholder="مثلاً: هر صبح قبل از گوشی، یک لیوان آب و سه نفس"
+      class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white placeholder:text-slate-600 focus:border-violet-500 outline-none resize-none mb-3">${esc(appState.ritual || '')}</textarea>
+    <div class="flex gap-2">
+      <button onclick="closeModal()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl py-2.5 text-xs font-bold transition">انصراف</button>
+      <button onclick="saveRitual()" class="flex-1 bg-violet-600 hover:bg-violet-500 text-white rounded-xl py-2.5 text-xs font-bold transition">ذخیره</button>
+    </div>`);
+}
+
+function saveRitual() {
+  appState.ritual = (el('ritual-input')?.value || '').trim();
+  save(); renderStage4(); closeModal();
+}
+
+/* ============================================================
+   مرحله ۵ — رهبر قله
+   ============================================================ */
+
+function renderStage5() {
+  const sbox = el('s5-standards');
+  if (sbox) {
+    if (!appState.s5Standards) appState.s5Standards = {};
+    sbox.innerHTML = S5_STANDARDS.map((s) => `
+      <label class="flex items-center gap-2 cursor-pointer">
+        <input type="checkbox" ${appState.s5Standards[s.key] ? 'checked' : ''} onchange="toggleS5Standard('${s.key}')" class="accent-yellow-500 rounded" />
+        <span class="${appState.s5Standards[s.key] ? 'text-yellow-200 font-bold' : 'text-slate-400'}">${esc(s.text)}</span>
+      </label>`).join('');
+  }
+
+  const mbox = el('mentor-list');
+  if (mbox) {
+    const notes = (appState.mentorNotes || []).slice(0, 3);
+    mbox.innerHTML = notes.length === 0
+      ? `<div class="text-center py-4 text-[11px] text-slate-500">هنوز یادداشتی نداری.</div>`
+      : notes.map((m) => `
+        <div class="bg-slate-950/60 border border-yellow-800/30 rounded-xl p-2.5">
+          <div class="flex justify-between mb-1">
+            <span class="text-[9px] text-yellow-400">${esc(m.who || 'همراه')}</span>
+            <span class="text-[9px] text-slate-600">${fmtDate(m.at)}</span>
+          </div>
+          <p class="text-[11px] text-slate-300 leading-relaxed">${esc(m.text)}</p>
+        </div>`).join('');
+  }
+
+  const legacy = el('legacy-input');
+  if (legacy && !legacy.value && appState.legacyLetter) legacy.value = appState.legacyLetter;
+
+  const stats = computeStats(appState);
+  if (el('legacy-xp')) el('legacy-xp').textContent = toFa(stats.xp);
+  if (el('legacy-days')) el('legacy-days').textContent = toFa(stats.activeDays);
+  if (el('legacy-pack')) el('legacy-pack').textContent = toFa((appState.pack || []).length);
+}
+
+function toggleS5Standard(key) {
+  if (!appState.s5Standards) appState.s5Standards = {};
+  appState.s5Standards[key] = !appState.s5Standards[key];
+  save(); renderStage5();
+}
+
+function openMentorModal() {
+  openModal(`
+    <h2 class="text-sm font-extrabold text-white mb-3">یادداشت منتورینگ</h2>
+    <input id="mentor-who" type="text" placeholder="با کی حرف زدی؟"
+      class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white mb-2 focus:border-yellow-500 outline-none" />
+    <textarea id="mentor-text" rows="3" placeholder="چه چیزی گفتی یا شنیدی؟"
+      class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white placeholder:text-slate-600 focus:border-yellow-500 outline-none resize-none mb-3"></textarea>
+    <div class="flex gap-2">
+      <button onclick="closeModal()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl py-2.5 text-xs font-bold transition">انصراف</button>
+      <button onclick="saveMentorNote()" class="flex-1 bg-yellow-600 hover:bg-yellow-500 text-slate-950 rounded-xl py-2.5 text-xs font-bold transition">ذخیره</button>
+    </div>`);
+}
+
+function saveMentorNote() {
+  const text = (el('mentor-text')?.value || '').trim();
+  if (!text) { toast('چند جمله بنویس.'); return; }
+  if (!appState.mentorNotes) appState.mentorNotes = [];
+  appState.mentorNotes.unshift({ who: (el('mentor-who')?.value || '').trim(), text, at: Date.now() });
+  appState.snowflakes = (appState.snowflakes || 0) + 15;
+  save(); renderStage5(); closeModal();
+}
+
+function saveLegacy() {
+  appState.legacyLetter = (el('legacy-input')?.value || '').trim();
+  save();
+  toast('نامه ذخیره شد ✉️');
+}
+
 function renderAll() {
   renderHeader();
   renderLeopard();
@@ -723,6 +1138,10 @@ function renderAll() {
   renderBreathingPatterns();
   renderMood();
   renderAdventure();
+  renderQuests();
+  renderStage3();
+  renderStage4();
+  renderStage5();
 }
 
 function boot() {
@@ -767,7 +1186,13 @@ Object.assign(window, {
   openReflectionModal, nextPrompt, toggleReflectionTag, saveReflection, startVoiceInput,
   submitDailyReport, selectPattern, toggleBreathing, setMood,
   startAdventure: startAdventure2,
-  openSettings, closeModal, doExport, triggerImport, doImport, doDiagnostics, doWipe
+  openSettings, closeModal, doExport, triggerImport, doImport, doDiagnostics, doWipe,
+  doClaimQuest,
+  openS3GoalModal, addS3Goal, toggleS3Goal, removeS3Goal,
+  openJournalModal, nextDeepPrompt, saveJournal,
+  openHabitModal, addHabit,
+  openPackModal, addPackMember, removePackMember, sendVibe, editRitual, saveRitual,
+  toggleS5Standard, openMentorModal, saveMentorNote, saveLegacy
 });
 
 boot();
