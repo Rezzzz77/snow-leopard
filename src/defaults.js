@@ -78,10 +78,11 @@ export const BREATHING_PATTERNS = [
 ];
 
 export const SOUNDSCAPES = [
-  { key: 'snow', label: 'برف', emoji: '❄' },
-  { key: 'wind', label: 'باد', emoji: '🌬' },
-  { key: 'water', label: 'آب', emoji: '💧' },
-  { key: 'silence', label: 'سکوت', emoji: '🤍' }
+  { key: 'snow', label: 'برف', emoji: '❄', file: 'snow.ogg' },
+  { key: 'wind', label: 'باد', emoji: '🌬', file: 'wind.ogg' },
+  { key: 'water', label: 'آب', emoji: '💧', file: 'water.ogg' },
+  { key: 'shore', label: 'موج', emoji: '🌊', file: 'shore.ogg' },
+  { key: 'silence', label: 'سکوت', emoji: '🤍', file: 'silence.ogg' }
 ];
 
 export const REFLECTION_TAGS = [

@@ -15,6 +15,9 @@ import { computeStats, moodTrend, weeklySummary, smartSuggestion, tagDistributio
 import { checkQuests, claimQuest, questProgress } from './src/quests.js';
 import { S3_PASS, S4_PASS, S5_STANDARDS, DEEP_REFLECTION_PROMPTS } from './src/defaults.js';
 import { nextStageProgress, stage3Met, stage4Met, countActiveDays } from './src/leopard.js';
+import { SOUNDSCAPES } from './src/defaults.js';
+import { toggleSoundscape, stopSoundscape, release as releaseAudio, getCurrentKey, isPlaying } from './src/audio.js';
+import { LOCALES, getLocale, setLocale, applyLocale, t, getDir } from './src/i18n.js';
 
 let appState = resetDailyGoals(loadFromStorage());
 let activeStageView = 1;
@@ -625,8 +628,20 @@ function toast(msg) {
 }
 
 function openSettings() {
+  const langOpts = LOCALES.map((l) => {
+    const active = getLocale() === l.code;
+    return `<button onclick="doSetLocale('${l.code}')"
+      class="flex-1 py-2 rounded-xl border text-[11px] font-bold transition ${active ? 'bg-sky-600 border-sky-400 text-white' : 'bg-slate-950 border-slate-700 text-slate-400'}">
+      ${l.flag} ${l.label}
+    </button>`;
+  }).join('');
+
   openModal(`
     <h2 class="text-sm font-extrabold text-white mb-3">تنظیمات</h2>
+    <div class="mb-4">
+      <div class="text-[10px] text-slate-500 mb-1.5">زبان / Language</div>
+      <div class="flex gap-1.5">${langOpts}</div>
+    </div>
     <div class="space-y-2 mb-4">
       <button onclick="doExport()" class="w-full text-right bg-slate-950 hover:bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white transition">📤 خروجی گرفتن از همه داده‌ها (JSON)</button>
       <button onclick="triggerImport()" class="w-full text-right bg-slate-950 hover:bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white transition">📥 وارد کردن داده‌ها</button>
@@ -636,6 +651,14 @@ function openSettings() {
     </div>
     <p class="text-[10px] text-slate-500 leading-relaxed mb-3">همه داده‌ها فقط روی همین دستگاه ذخیره می‌شوند. هیچ اتصال شبکه‌ای وجود ندارد.</p>
     <button onclick="closeModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl py-2.5 text-xs font-bold transition">بستن</button>`);
+}
+
+function doSetLocale(code) {
+  setLocale(code);
+  applyLocale(code);
+  toast(code === 'en' ? 'Language: English' : 'زبان: فارسی');
+  closeModal();
+  location.reload();
 }
 
 function doExport() {
@@ -715,6 +738,45 @@ function startJourney() {
   boot();
 }
 
+
+
+/* ============================================================
+   صداهای محیطی
+   ============================================================ */
+
+function renderSoundscapes() {
+  const box = el('soundscape-options');
+  if (!box) return;
+
+  const cur = getCurrentKey();
+  const on = isPlaying();
+
+  box.innerHTML = SOUNDSCAPES.map((s) => {
+    const active = on && cur === s.key;
+    return `<button onclick="doToggleSound('${s.key}')" data-sound="${s.key}"
+      class="sound-btn py-2 rounded-xl border transition text-center ${active ? 'bg-emerald-900/60 border-emerald-500' : 'bg-slate-950 border-slate-800 hover:border-emerald-600'}">
+      <div class="text-base">${s.emoji}</div>
+      <div class="text-[9px] ${active ? 'text-emerald-300' : 'text-slate-500'} mt-0.5">${s.label}</div>
+    </button>`;
+  }).join('');
+}
+
+function doToggleSound(key) {
+  const r = toggleSoundscape(key);
+  renderSoundscapes();
+  if (!r.playing) {
+    toast('صدا متوقف شد ⏹');
+  } else {
+    const sc = SOUNDSCAPES.find((s) => s.key === key);
+    toast(`${sc.emoji} ${sc.label} — پخش`);
+  }
+}
+
+function stopAllAudio() {
+  stopSoundscape();
+  renderSoundscapes();
+  toast('همه صداها متوقف شد');
+}
 
 /* ============================================================
    مرحله ۲ — مأموریت‌ها
@@ -1139,6 +1201,7 @@ function renderAll() {
   renderMood();
   renderAdventure();
   renderQuests();
+  renderSoundscapes();
   renderStage3();
   renderStage4();
   renderStage5();
@@ -1192,7 +1255,19 @@ Object.assign(window, {
   openJournalModal, nextDeepPrompt, saveJournal,
   openHabitModal, addHabit,
   openPackModal, addPackMember, removePackMember, sendVibe, editRitual, saveRitual,
-  toggleS5Standard, openMentorModal, saveMentorNote, saveLegacy
+  toggleS5Standard, openMentorModal, saveMentorNote, saveLegacy,
+  doToggleSound, stopAllAudio, doSetLocale
+});
+
+// اعمال زبان ذخیره‌شده
+applyLocale();
+
+// آزادسازی صدا وقتی صفحه پنهان می‌شود
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && isPlaying()) {
+    stopSoundscape();
+    renderSoundscapes();
+  }
 });
 
 boot();

@@ -35,10 +35,11 @@ python3 -m http.server 8080
 ### دستورها
 
 ```bash
-npm test                          # تست واحد (۹۲ تست)
+npm test                          # تست واحد (۱۱۱ تست)
 python3 tools/check_contracts.py  # تست قرارداد HTML ↔ JS
 python3 tools/build_graph.py      # بازتولید گراف دانش
 python3 tools/extract_leopard.py  # استخراج کاراکتر از assets/leopard/source.jpg
+python3 tools/make_audio.py       # تولید صداهای محیطی (ffmpeg لازم)
 python3 tools/make_icons.py       # ساخت آیکون‌های PWA
 bash tools/backup.sh              # بکاپ: snapshot + کامیت + tag
 ```
@@ -55,7 +56,7 @@ bash tools/backup.sh              # بکاپ: snapshot + کامیت + tag
 | ۴ | **بالغ** | ۹۰ روز | عمق و استقلال | پک نزدیکان، اشتراک |
 | ۵ | **رهبر قله** | مستمر | میراث | داشبورد، منتورینگ |
 
-**نسخه فعلی v0.2.0:** هر پنج مرحله کامل و قابل استفاده.
+**نسخه فعلی v0.3.0:** هر پنج مرحله + صداهای محیطی + فارسی/انگلیسی.
 
 ---
 
@@ -73,6 +74,8 @@ bash tools/backup.sh              # بکاپ: snapshot + کامیت + tag
 - **عادت‌های بلندمدت** — پیگیری ۲۱ روزه
 - **پک نزدیکان** — حداکثر ۵ نفر، بدون فید
 - **مأموریت‌ها** — ۱۳ کویست با جایزه برف
+- **صداهای محیطی** — ۵ soundscape پروسدورال (برف، باد، آب، موج، سکوت) — ۴۱۶KB کل
+- **چندزبانه** — فارسی (RTL) + انگلیسی (LTR)
 - **مالکیت داده** — خروجی JSON، ورود، پاک‌سازی کامل
 
 ---
