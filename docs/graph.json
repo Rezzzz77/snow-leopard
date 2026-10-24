@@ -5,8 +5,8 @@
     "schema": 1,
     "generator": "tools/build_graph.py",
     "counts": {
-      "nodes": 48,
-      "edges": 57
+      "nodes": 58,
+      "edges": 67
     }
   },
   "nodes": [
@@ -102,10 +102,34 @@
       "desc": "۵ نوع + ریست شبانه"
     },
     {
+      "id": "f:habits",
+      "label": "عادت‌های بلندمدت",
+      "type": "feature",
+      "desc": "۲۱ روز"
+    },
+    {
+      "id": "f:insights",
+      "label": "بینش",
+      "type": "feature",
+      "desc": "آمار، روند حال، خلاصه"
+    },
+    {
+      "id": "f:journal",
+      "label": "ژورنال عمیق",
+      "type": "feature",
+      "desc": "۲۰ پرامپت"
+    },
+    {
       "id": "f:leopard",
       "label": "کاراکتر پلنگ برفی",
       "type": "feature",
       "desc": "۵ مرحله رشد"
+    },
+    {
+      "id": "f:mentor",
+      "label": "منتورینگ",
+      "type": "feature",
+      "desc": "یادداشت مرحله ۵"
     },
     {
       "id": "f:mood",
@@ -120,16 +144,34 @@
       "desc": "Service Worker"
     },
     {
+      "id": "f:pack",
+      "label": "پک نزدیکان",
+      "type": "feature",
+      "desc": "حداکثر ۵ نفر"
+    },
+    {
       "id": "f:pwa",
       "label": "نصب‌پذیر",
       "type": "feature",
       "desc": "manifest + آیکون"
     },
     {
+      "id": "f:quests",
+      "label": "مأموریت‌ها",
+      "type": "feature",
+      "desc": "۱۳ کویست + جایزه"
+    },
+    {
       "id": "f:reflections",
       "label": "تأمل",
       "type": "feature",
       "desc": "پرامپت + تگ + صدا"
+    },
+    {
+      "id": "f:ritual",
+      "label": "آیین شخصی",
+      "type": "feature",
+      "desc": "مرحله ۴"
     },
     {
       "id": "f:snowflakes",
@@ -142,6 +184,12 @@
       "label": "زنجیره",
       "type": "feature",
       "desc": "۷ روزه + تعمیر"
+    },
+    {
+      "id": "f:vibes",
+      "label": "وایب",
+      "type": "feature",
+      "desc": "۴ نوع"
     },
     {
       "id": "f:welcome",
@@ -186,6 +234,12 @@
       "desc": "داده پیش‌فرض"
     },
     {
+      "id": "file:src/insights.js",
+      "label": "src/insights.js",
+      "type": "module",
+      "desc": "تحلیل الگوها، روند، خلاصه"
+    },
+    {
       "id": "file:src/leopard.js",
       "label": "src/leopard.js",
       "type": "module",
@@ -196,6 +250,12 @@
       "label": "src/prompts.js",
       "type": "module",
       "desc": "۶۲ پرامپت تأمل"
+    },
+    {
+      "id": "file:src/quests.js",
+      "label": "src/quests.js",
+      "type": "module",
+      "desc": "۱۳ مأموریت با جایزه برف"
     },
     {
       "id": "file:src/stories.js",
@@ -356,8 +416,28 @@
       "type": "implemented_in"
     },
     {
+      "source": "f:habits",
+      "target": "file:src/defaults.js",
+      "type": "implemented_in"
+    },
+    {
+      "source": "f:insights",
+      "target": "file:src/insights.js",
+      "type": "implemented_in"
+    },
+    {
+      "source": "f:journal",
+      "target": "file:src/defaults.js",
+      "type": "implemented_in"
+    },
+    {
       "source": "f:leopard",
       "target": "file:src/leopard.js",
+      "type": "implemented_in"
+    },
+    {
+      "source": "f:mentor",
+      "target": "file:app.js",
       "type": "implemented_in"
     },
     {
@@ -371,13 +451,28 @@
       "type": "implemented_in"
     },
     {
+      "source": "f:pack",
+      "target": "file:app.js",
+      "type": "implemented_in"
+    },
+    {
       "source": "f:pwa",
       "target": "file:manifest.json",
       "type": "implemented_in"
     },
     {
+      "source": "f:quests",
+      "target": "file:src/quests.js",
+      "type": "implemented_in"
+    },
+    {
       "source": "f:reflections",
       "target": "file:src/prompts.js",
+      "type": "implemented_in"
+    },
+    {
+      "source": "f:ritual",
+      "target": "file:app.js",
       "type": "implemented_in"
     },
     {
@@ -388,6 +483,11 @@
     {
       "source": "f:streak",
       "target": "file:src/leopard.js",
+      "type": "implemented_in"
+    },
+    {
+      "source": "f:vibes",
+      "target": "file:app.js",
       "type": "implemented_in"
     },
     {
@@ -432,12 +532,22 @@
     },
     {
       "source": "file:app.js",
+      "target": "file:src/insights.js",
+      "type": "imports"
+    },
+    {
+      "source": "file:app.js",
       "target": "file:src/leopard.js",
       "type": "imports"
     },
     {
       "source": "file:app.js",
       "target": "file:src/prompts.js",
+      "type": "imports"
+    },
+    {
+      "source": "file:app.js",
+      "target": "file:src/quests.js",
       "type": "imports"
     },
     {

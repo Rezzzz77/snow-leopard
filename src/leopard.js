@@ -171,15 +171,85 @@ export function checkIn(state, now = Date.now()) {
   return { ok: true, count: 1, reset: true, alreadyToday: false };
 }
 
+/**
+ * بالاترین مرحله باز برنامه (۱..۵)
+ * هر مرحله با تکمیل «معیار عبور» مرحله قبل باز می‌شود.
+ */
 export function getHighestUnlockedStage(state) {
   if (!state) return 1;
+
+  // مرحله ۱: پنج قدم
   const s1Done = (state.s1Steps || []).every((s) => s.done);
   if (!s1Done) return 1;
+
+  // مرحله ۲: زنجیره ۷ روزه
   const streak = state.streak?.count || 0;
   if (streak < 7) return 2;
-  const xp = computeXP(state);
-  const { stage } = getStage(xp);
-  return Math.min(2, stage);
+
+  // مرحله ۳: ۳۰ روز فعالیت + ۱۰ تأمل عمیق
+  if (!stage3Met(state)) return 3;
+
+  // مرحله ۴: ۹۰ روز + یک همراهی + آیین شخصی
+  if (!stage4Met(state)) return 4;
+
+  return 5;
+}
+
+/** معیار عبور مرحله ۳ */
+export function stage3Met(state) {
+  if (!state) return false;
+  const reflections = (state.reflections || []).length;
+  const activeDays = countActiveDays(state);
+  const hasGoal = (state.s3Goals || []).length > 0;
+  return reflections >= 10 && activeDays >= 28 && hasGoal;
+}
+
+/** معیار عبور مرحله ۴ */
+export function stage4Met(state) {
+  if (!state) return false;
+  const pack = (state.pack || []).length;
+  const vibes = (state.vibesSent || []).length;
+  const habits = (state.habits || []).filter((h) => h.streak >= 21).length;
+  return pack >= 1 && vibes >= 5 && habits >= 1;
+}
+
+/** تعداد روزهای متمایز با فعالیت */
+export function countActiveDays(state) {
+  if (!state) return 0;
+  const days = new Set();
+  const push = (ts) => {
+    if (ts) days.add(dayKey(ts));
+  };
+  (state.reflections || []).forEach((r) => push(r.at));
+  (state.moods || []).forEach((m) => m.day && days.add(m.day));
+  (state.breathingSessions || []).forEach((b) => push(b.at));
+  (state.dailyReports || []).forEach((d) => push(d.at));
+  (state.adventures || []).forEach((a) => push(a.at));
+  (state.journalEntries || []).forEach((j) => push(j.at));
+  return days.size;
+}
+
+/** درصد پیشرفت به‌سمت باز شدن مرحله بعد */
+export function nextStageProgress(state) {
+  const cur = getHighestUnlockedStage(state);
+
+  if (cur === 2) {
+    const streak = state.streak?.count || 0;
+    return { stage: 3, pct: Math.min(100, Math.round((streak / 7) * 100)), label: 'زنجیره هفت روزه' };
+  }
+  if (cur === 3) {
+    const r = Math.min(10, (state.reflections || []).length) / 10;
+    const d = Math.min(28, countActiveDays(state)) / 28;
+    const g = (state.s3Goals || []).length > 0 ? 1 : 0;
+    return { stage: 4, pct: Math.round(((r + d + g) / 3) * 100), label: 'ژورنال عمیق + ۳۰ روز' };
+  }
+  if (cur === 4) {
+    const p = Math.min(1, (state.pack || []).length) / 1;
+    const v = Math.min(5, (state.vibesSent || []).length) / 5;
+    const h = Math.min(1, (state.habits || []).filter((x) => x.streak >= 21).length) / 1;
+    return { stage: 5, pct: Math.round(((p + v + h) / 3) * 100), label: 'همراهی + آیین شخصی' };
+  }
+  return { stage: cur, pct: 100, label: cur === 5 ? 'قله' : 'در حال پیشرفت' };
 }
 
 export function resetDailyGoals(state, now = Date.now()) {
